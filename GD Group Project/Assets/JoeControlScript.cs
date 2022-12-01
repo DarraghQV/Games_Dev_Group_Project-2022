@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using Cinemachine;
 
 public class JoeControlScript : NetworkBehaviour,Health
 {
@@ -12,7 +13,7 @@ public class JoeControlScript : NetworkBehaviour,Health
 
     PickUP rightHand;
 
-    
+
 
     CharacterStates joe_state = CharacterStates.Grounded;
     private Vector3 jumping_velocity;
@@ -30,6 +31,8 @@ public class JoeControlScript : NetworkBehaviour,Health
     // Start is called before the first frame update
     void Start()
     {
+        setupCamera();
+
         myRightHand = getRightHand();
 
         joe_animator = GetComponent<Animator>();
@@ -37,6 +40,14 @@ public class JoeControlScript : NetworkBehaviour,Health
             print("Found");
         else
             print("Animator not found");
+
+    }
+
+    private void setupCamera()
+    {
+
+        GameObject newCam =   Instantiate(StaticFeatures.cineCameraCloneTemplate);
+        (newCam as Cinemachine.).CinemachineVirtualCamera;
 
     }
 

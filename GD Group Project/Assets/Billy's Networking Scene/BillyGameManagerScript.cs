@@ -14,6 +14,7 @@ public class BillyGameManagerScript : MonoBehaviour
     {
         tileManager = FindObjectOfType<TileMapMaster>();
         tileManager.CreateMap(30, 3, 15, 20);
+     
     }
 
     private void spawnJoe()
@@ -22,7 +23,7 @@ public class BillyGameManagerScript : MonoBehaviour
         GameObject joeCameraGO = new GameObject("JoeCamGO");
         joeCameraGO.transform.parent = joe.transform;
         joeCameraGO.transform.localPosition = new Vector3(0, 1, -2);
-
+        print("Hello");
         Camera joeCam = joeCameraGO.gameObject.AddComponent<Camera>();
         Camera.main.tag = "Untagged";
         joeCam.tag = "MainCamera";

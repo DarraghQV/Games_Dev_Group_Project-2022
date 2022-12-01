@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Billy's Networking Scene/LatestVersion.unity
     guid: 5410acf6122a05c468bf02d4d72e3cee
+  - enabled: 1
+    path: Assets/MouseMovement/LatestVersion 1.unity
+    guid: 1b61a3795a8a46741b74ed75b5e0814e
   m_configObjects: {}
