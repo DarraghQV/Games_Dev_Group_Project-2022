@@ -19,7 +19,7 @@ public class GunScript : PickUP
     // Start is called before the first frame update
     void Start()
     {
-      
+        gunTimer = gameObject.AddComponent<TimerScript>();
     }
 
     // Update is called once per frame

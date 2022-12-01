@@ -40,7 +40,10 @@ public class TileMapMaster : MonoBehaviour
     private Quaternion Tile_rotation = new Quaternion(0.70711f,0,0,-0.70711f); // rotates the spawned tile so it lies flat ... may god have mercy on you if you change this
     private bool is_map_created = false;
 
-   
+    private void Start()
+    {
+    
+    }
 
     public bool CreateMap(float radius,int levels,int radius_dec_per_level,float distance_between_levels) 
     {
@@ -92,7 +95,7 @@ public class TileMapMaster : MonoBehaviour
 
     internal void SpawnTile(Vector3 location) 
     {
-        GameObject spawnedTile = Instantiate(tile, location, Tile_rotation) as GameObject; // adds the currently spawned tile to a list of spawned tiles
+        GameObject spawnedTile = Instantiate(tile, location, Tile_rotation,transform) as GameObject; // adds the currently spawned tile to a list of spawned tiles
         TileScript current_tile = spawnedTile.GetComponent<TileScript>();
         current_tile.Set_Manager(this);
         Tiles.Add(current_tile);

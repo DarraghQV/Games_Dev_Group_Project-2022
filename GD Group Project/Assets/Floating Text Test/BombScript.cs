@@ -14,6 +14,7 @@ public class BombScript : PickUP
     // Start is called before the first frame update
     void Start()
     {
+        
         Acceleration = new Vector3(0, 0, 0);
     }
 

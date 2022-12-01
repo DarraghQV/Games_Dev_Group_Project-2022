@@ -29,5 +29,6 @@ public class PickUP : MonoBehaviour
         currentState = PickUpItemStates.Held;
         transform.parent = joe.myRightHand;
         transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
     }
 }

@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
+using Cinemachine;
 
-public class JoeControlScript : MonoBehaviour
+public class JoeControlScript : NetworkBehaviour,Health
 {
     enum CharacterStates {Grounded, JumpUp, Falling }
 
@@ -11,11 +13,11 @@ public class JoeControlScript : MonoBehaviour
 
     PickUP rightHand;
 
-    
+
 
     CharacterStates joe_state = CharacterStates.Grounded;
     private Vector3 jumping_velocity;
-    float start_jump_velocity = 5;
+    float start_jump_velocity = 10;
 
     private float walking_speed = 2;
     private float running_speed = 4;
@@ -24,10 +26,13 @@ public class JoeControlScript : MonoBehaviour
     Animator joe_animator;
     private float rotation_speed = 180;
     private float gravity = 10;
+    private float dirBoost = 2;
 
     // Start is called before the first frame update
     void Start()
     {
+        setupCamera();
+
         myRightHand = getRightHand();
 
         joe_animator = GetComponent<Animator>();
@@ -38,12 +43,20 @@ public class JoeControlScript : MonoBehaviour
 
     }
 
+    private void setupCamera()
+    {
+
+        GameObject newCam =   Instantiate(StaticFeatures.cineCameraCloneTemplate);
+        (newCam as Cinemachine.).CinemachineVirtualCamera;
+
+    }
+
     private Transform getRightHand()
     {
         Transform[] allBones = transform.GetComponentsInChildren<Transform>();
         foreach (Transform bone in allBones)
         {
-            if (bone.name == "basic_rig R Hand")
+            if (bone.name == "HoldRight")
             {
                 return bone;
 
@@ -58,6 +71,8 @@ public class JoeControlScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!IsOwner) return;
+
         current_speed = 0;
 
 
@@ -71,7 +86,7 @@ public class JoeControlScript : MonoBehaviour
                 if (shouldTurnLeft()) turn_left();
                 if (shouldTurnRight()) turn_right();
                 if (shouldPickUp()) pickUp();
-                if (shouldThrowBomb()) act();
+                if (shouldUseRight()) useRight();
                 if (shouldFireGun()) FireGun();
                 if (shouldJump()) jump();
                 transform.position += current_speed * transform.forward * Time.deltaTime;
@@ -93,16 +108,19 @@ public class JoeControlScript : MonoBehaviour
 
             case CharacterStates.Falling:
 
-                transform.position += jumping_velocity * Time.deltaTime;
-                jumping_velocity -= gravity*Vector3.up * Time.deltaTime;
-                Debug.DrawLine(transform.position, transform.position - Vector3.down);
+
                 Collider[] colliding_with = Physics.OverlapBox(transform.position, new Vector3(0.5f, 0.1f, 0.5f));
                 foreach (Collider c in colliding_with)
-                {
-                    joe_animator.SetBool("isLanding", true);
-                    joe_animator.SetBool("isJumping", false);
-                    joe_animator.SetBool("isLanding", true);
-                    joe_state = CharacterStates.Grounded;
+                {   
+                    print(c.tag);
+
+                    if (c.tag == "Tile")
+                    {
+                        joe_animator.SetBool("isLanding", true);
+                        joe_animator.SetBool("isJumping", false);
+                   
+                        joe_state = CharacterStates.Grounded;
+                    }
 
                 }
 
@@ -132,7 +150,7 @@ public class JoeControlScript : MonoBehaviour
         return Input.GetKeyDown(KeyCode.F);
     }
 
-    private void act()
+    private void useRight()
     {
         if (rightHand is BombScript )
         {
@@ -147,7 +165,7 @@ public class JoeControlScript : MonoBehaviour
        
     }
 
-    private bool shouldThrowBomb()
+    private bool shouldUseRight()
     {
         return Input.GetKeyDown(KeyCode.T);
     }
@@ -163,6 +181,8 @@ public class JoeControlScript : MonoBehaviour
             if (newItem)
             {   if (rightHand == null)
                 {
+
+                    joe_animator.SetBool("isPickingUp", true);
                     rightHand = newItem;
                     newItem.latestOwner(this);
                 }
@@ -183,9 +203,10 @@ public class JoeControlScript : MonoBehaviour
     private void jump()
     {
         joe_animator.SetBool("isJumping", true);
+        joe_animator.SetBool("isLanding", false);
         joe_state = CharacterStates.JumpUp;
 
-        jumping_velocity =  current_speed* transform.forward +  start_jump_velocity* Vector3.up;
+        jumping_velocity =  dirBoost *current_speed* transform.forward +  start_jump_velocity* Vector3.up;
 
 
     }
@@ -238,5 +259,10 @@ public class JoeControlScript : MonoBehaviour
     private  bool shouldWalkForward()
     {
         return Input.GetKey(KeyCode.W);
+    }
+
+    public void Take_Damage(float damage)
+    {
+        throw new NotImplementedException();
     }
 }
